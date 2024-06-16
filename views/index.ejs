@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast App</title>
+</head>
+<body>
+    <h2>Find the weather of your city!</h2>
+
+    <div class="form">
+        <form action="/weather" method="POST">
+            <input type="text" id="cityInput" name="city"  placeholder="Enter city name" autocomplete>
+            <button type="submit">Get Weather</button>
+        </form>
+
+        <!-- <% if (weather) { %>
+            <h3>Weather of <%= weather.city %></h3>
+            <p>Temperature: <%= weather.temperature %>°C</p>
+            <p>Minimum Temperature: <%= weather.temp_min %></p>
+            <p>Pressure: <%= weather.pressure %></p>
+            <p>Description: <%= weather.description %></p>
+            
+        <% } %> -->
+    </div>
+
+    <div class="weather-info">
+        <!-- This is where weather data could be dynamically updated using JavaScript -->
+    </div>
+
+    <script src="js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</body>
+</html>

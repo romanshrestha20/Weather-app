@@ -1,48 +1,68 @@
 const express = require('express');
-const axios = require('axios'); // Require Axios
+const axios = require('axios');
 const router = express.Router();
 
-const apiKey = process.env.API_KEY; // Ensure you have your API key set in your environment variables
+const apiKey = process.env.API_KEY; // Ensure this is set in your environment variables
 const apiUrl = 'https://api.openweathermap.org/data/2.5/weather';
+const apiUrlForecast = 'https://api.openweathermap.org/data/2.5/forecast';
 
-
-// Route to handle rendering the home page
 router.get('/', (req, res) => {
-    res.render('index', { weather: null, error: null });
+    res.render('index', { weather: null, error: null, fourDayForecast: null });
 });
 
-// Route to handle fetching weather data based on city name
 router.post('/weather', async (req, res) => {
     const { city } = req.body;
-    console.log('City:', city); // Log the city to check its value
+
+    if (!city) {
+        return res.status(400).json({ error: 'City name is required' });
+    }
 
     try {
-        const response = await axios.get(apiUrl, {
+        // Fetch current weather data
+        const weatherResponse = await axios.get(apiUrl, {
             params: {
                 q: city,
                 units: 'metric',
                 appid: apiKey
             }
         });
-        
+        const weather = weatherResponse.data;
 
-        // Axios automatically throws an error for non-2xx responses
-        const data = response.data;
-        const weather = {
-            city: data.name,
-            temperature: data.main.temp,
-            temp_min: data.main.temp_min,
-            temp_max: data.main.temp_max,
-            pressure: data.main.pressure,
-            description: data.weather[0].description,
-            icon: data.weather[0].icon
-        };
-        res.json(weather); // Send the weather data as JSON
-        // res.render('index', { weather: weather, error: null });
+        // Fetch forecast data
+        const forecastResponse = await axios.get(apiUrlForecast, {
+            params: {
+                q: city,
+                units: 'metric',
+                appid: apiKey
+            }
+        });
+        const fourDayForecast = processForecastData(forecastResponse.data.list);
+
+        // Send response with weather and forecast data
+        res.json({
+            weather: {
+                city: weather.name,
+                temperature: weather.main.temp,
+                temp_min: weather.main.temp_min,
+                pressure: weather.main.pressure,
+                description: weather.weather[0].description
+            },
+            fourDayForecast: fourDayForecast // This contains the next 5 days' forecast
+        });
     } catch (error) {
-        console.error('Axios error:', error); // Log the Axios error for debugging
-        res.status(500).json({ error: 'Internal server error' }); // Send a generic error response
+        console.error('Error fetching weather data:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Function to process forecast data
+function processForecastData(forecastList) {
+    // Extract relevant information for each day (date, temperature, description)
+    return forecastList.map(forecast => ({
+        date: forecast.dt_txt,
+        temperature: forecast.main.temp,
+        description: forecast.weather[0].description
+    }));
+}
 
 module.exports = router;

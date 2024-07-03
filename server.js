@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const weather = require('./routes/weather');
 app.use('/', weather);
 
-const port = 3000;
+const port = 3005;
 
 // Set the view engine to ejs
 app.set('view engine', 'ejs');

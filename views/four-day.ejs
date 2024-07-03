@@ -1,0 +1,25 @@
+<% if (fourDayForecast) { %>
+    <h2>Four Day Forecast</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temperature (°C)</th>
+                <th>Minimum Temperature (°C)</th>
+                <th>Pressure (hPa)</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% fourDayForecast.forEach(day => { %>
+                <tr>
+                    <td><%= day.date %></td>
+                    <td><%= day.temperature %>°C</td>
+                    <td><%= day.temp_min %>°C</td>
+                    <td><%= day.pressure %> hPa</td>
+                    <td><%= day.description %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+<% } %>
